@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediTrack - Add / Edit Medicine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-pills"></i></div>
+            <h1>MediTrack</h1>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="home.html"><i class="fas fa-home"></i> Home</a>
+            <a href="dashboard.html"><i class="fas fa-chart-pie"></i> Dashboard</a>
+            <a href="add.html" class="active"><i class="fas fa-plus-circle"></i> Add Medicine</a>
+        </nav>
+        <div class="sidebar-footer">
+            <span class="doctor-name"><i class="fas fa-user-md"></i> Dr. Jayasekara</span>
+            <span>Family Care Medical Center, Gelioya</span>
+            <span style="margin-top:4px;font-size:11px;">v1.0 &bull; 2026</span>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+
+        <!-- Mobile Header -->
+        <div class="mobile-header">
+            <button class="sidebar-toggle" id="mobileToggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <span class="brand-mobile">MediTrack</span>
+        </div>
+
+        <!-- Add/Edit Page -->
+        <section class="page add-page">
+            <div class="card">
+                <h2 id="formTitle">Add Medicine</h2>
+                <p class="sub" id="formSub">Fill in the details below.</p>
+
+                <form id="medicineForm" onsubmit="handleFormSubmit(event)">
+                    <input type="hidden" id="editId" value="" />
+
+                    <div class="form-group">
+                        <label>Medicine Name <span class="required">*</span></label>
+                        <input type="text" id="medName" placeholder="e.g. Paracetamol 500mg" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Category <span class="required">*</span></label>
+                        <select id="medCategory" required>
+                            <option value="">Select category</option>
+                            <option value="Pain Relief">Pain Relief</option>
+                            <option value="Antibiotics">Antibiotics</option>
+                            <option value="Vitamins">Vitamins</option>
+                            <option value="Diabetes">Diabetes</option>
+                            <option value="Antihistamines">Antihistamines</option>
+                            <option value="Cardiovascular">Cardiovascular</option>
+                            <option value="Respiratory">Respiratory</option>
+                            <option value="Gastrointestinal">Gastrointestinal</option>
+                            <option value="Neurology">Neurology</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Quantity <span class="required">*</span></label>
+                        <input type="number" id="medQty" placeholder="e.g. 100" min="1" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Expiry Date <span class="required">*</span></label>
+                        <input type="date" id="medExpiry" required />
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="dashboard.html" class="btn-secondary">Cancel</a>
+                        <button type="submit" class="btn-submit" id="formSubmitBtn">
+                            <i class="fas fa-save"></i> Save Medicine
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ===== SIDEBAR OVERLAY ===== -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <script src="app.js"></script>
+    <script>
+        // Sidebar toggle
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('open');
+        }
+        document.getElementById('sidebarOverlay').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.remove('open');
+            this.classList.remove('open');
+        });
+
+        // ===== Check for edit mode via URL parameter =====
+        const urlParams = new URLSearchParams(window.location.search);
+        const editId = urlParams.get('id');
+
+        if (editId) {
+            // Load medicine data and populate form
+            const medicines = getMedicines();
+            const med = medicines.find(m => m.id === editId);
+            if (med) {
+                document.getElementById('formTitle').textContent = 'Edit Medicine';
+                document.getElementById('formSub').textContent = 'Update the details below.';
+                document.getElementById('formSubmitBtn').innerHTML = '<i class="fas fa-pen"></i> Update Medicine';
+                document.getElementById('editId').value = med.id;
+                document.getElementById('medName').value = med.name;
+                document.getElementById('medCategory').value = med.category || 'Other';
+                document.getElementById('medQty').value = med.quantity;
+                document.getElementById('medExpiry').value = med.expiry;
+            } else {
+                // Invalid id, redirect to add (clean)
+                window.location.href = 'add.html';
+            }
+        }
+
+        // ===== Form submit handler =====
+        function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('medName').value.trim();
+            const category = document.getElementById('medCategory').value;
+            const quantity = parseInt(document.getElementById('medQty').value);
+            const expiry = document.getElementById('medExpiry').value;
+            const id = document.getElementById('editId').value;
+
+            if (!name || !category || !quantity || !expiry) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            let medicines = getMedicines();
+
+            if (id) {
+                // Update
+                const index = medicines.findIndex(m => m.id === id);
+                if (index !== -1) {
+                    medicines[index] = { ...medicines[index], name, category, quantity, expiry };
+                    saveMedicines(medicines);
+                    alert(`✅ "${name}" updated successfully!`);
+                } else {
+                    alert('Error: Medicine not found.');
+                    return;
+                }
+            } else {
+                // Add new
+                const newMed = {
+                    id: generateId(),
+                    name,
+                    category,
+                    quantity,
+                    expiry
+                };
+                medicines.push(newMed);
+                saveMedicines(medicines);
+                alert(`✅ "${name}" added successfully!`);
+            }
+
+            // Redirect to dashboard
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>
