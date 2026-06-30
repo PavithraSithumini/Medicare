@@ -95,7 +95,6 @@
                     <thead>
                         <tr>
                             <th>Medicine</th>
-                            <th>Category</th>
                             <th>Qty</th>
                             <th>Expiry Date</th>
                             <th>Days Left</th>
@@ -138,8 +137,7 @@
             let filtered = medicines;
             if (query) {
                 filtered = medicines.filter(m =>
-                    m.name.toLowerCase().includes(query) ||
-                    m.category.toLowerCase().includes(query)
+                    m.name.toLowerCase().includes(query)
                 );
             }
 
@@ -172,7 +170,6 @@
                 return `
                     <tr>
                         <td class="medicine-name">${m.name}</td>
-                        <td>${m.category || 'Other'}</td>
                         <td><strong>${m.quantity}</strong></td>
                         <td>${formatDate(m.expiry)}</td>
                         <td class="days-left ${daysClass}">${daysDisplay}</td>
