@@ -224,6 +224,12 @@
             renderTable();
         }
 
+        const successMessage = localStorage.getItem('loginSuccessMessage');
+        if (successMessage) {
+            showToast(successMessage, 'success');
+            localStorage.removeItem('loginSuccessMessage');
+        }
+
         // Initial render
         renderDashboard();
     </script>

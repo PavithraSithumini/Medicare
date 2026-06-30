@@ -87,11 +87,11 @@
             const validUsername = 'admin';
             const validPassword = 'password123';
 
-            // Hide any previous error
+            // Hide any previous error state
             errorBox.classList.remove('show');
 
             if (username === validUsername && password === validPassword) {
-                // ✅ Success: redirect to dashboard.html
+                localStorage.setItem('loginSuccessMessage', 'Login successful!');
                 window.location.href = 'dashboard.html';
             } else {
                 // ❌ Show error
@@ -123,7 +123,7 @@
         // ===== SIDEBAR TOGGLE LOGIC (for consistency, though not used on login) =====
         // This is just a placeholder to match the pattern; login doesn't have a sidebar.
         // But we keep it silent.
-        console.log('Login page loaded. Use admin / password123');
+        console.log('Login page loaded.');
     </script>
 </body>
 
