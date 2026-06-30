@@ -54,23 +54,6 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Category <span class="required">*</span></label>
-                        <select id="medCategory" required>
-                            <option value="">Select category</option>
-                            <option value="Pain Relief">Pain Relief</option>
-                            <option value="Antibiotics">Antibiotics</option>
-                            <option value="Vitamins">Vitamins</option>
-                            <option value="Diabetes">Diabetes</option>
-                            <option value="Antihistamines">Antihistamines</option>
-                            <option value="Cardiovascular">Cardiovascular</option>
-                            <option value="Respiratory">Respiratory</option>
-                            <option value="Gastrointestinal">Gastrointestinal</option>
-                            <option value="Neurology">Neurology</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
                         <label>Quantity <span class="required">*</span></label>
                         <input type="number" id="medQty" placeholder="e.g. 100" min="1" required />
                     </div>
@@ -121,7 +104,6 @@
                 document.getElementById('formSubmitBtn').innerHTML = '<i class="fas fa-pen"></i> Update Medicine';
                 document.getElementById('editId').value = med.id;
                 document.getElementById('medName').value = med.name;
-                document.getElementById('medCategory').value = med.category || 'Other';
                 document.getElementById('medQty').value = med.quantity;
                 document.getElementById('medExpiry').value = med.expiry;
             } else {
@@ -135,12 +117,11 @@
             e.preventDefault();
 
             const name = document.getElementById('medName').value.trim();
-            const category = document.getElementById('medCategory').value;
             const quantity = parseInt(document.getElementById('medQty').value);
             const expiry = document.getElementById('medExpiry').value;
             const id = document.getElementById('editId').value;
 
-            if (!name || !category || !quantity || !expiry) {
+            if (!name || !quantity || !expiry) {
                 alert('Please fill in all required fields.');
                 return;
             }
@@ -151,7 +132,7 @@
                 // Update
                 const index = medicines.findIndex(m => m.id === id);
                 if (index !== -1) {
-                    medicines[index] = { ...medicines[index], name, category, quantity, expiry };
+                    medicines[index] = { ...medicines[index], name, quantity, expiry };
                     saveMedicines(medicines);
                     alert(`✅ "${name}" updated successfully!`);
                 } else {
@@ -163,7 +144,6 @@
                 const newMed = {
                     id: generateId(),
                     name,
-                    category,
                     quantity,
                     expiry
                 };
